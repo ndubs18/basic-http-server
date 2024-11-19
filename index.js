@@ -38,6 +38,39 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 //converting callback based socket api into promise based
 var net = require("net");
+var host = '127.0.0.1';
+var port = 1234;
+var soInit = function (socket) {
+    //create our connection object
+    var conn = {
+        socket: socket,
+        err: null,
+        ended: false,
+        reader: null
+    };
+    socket.on('data', function (data) {
+        console.assert(conn.reader);
+        // Pause the 'data' event on this socket from being omitted 
+        conn.socket.pause();
+        conn.reader.resolve(data);
+        conn.reader = null;
+    });
+    socket.on('end', function () {
+        conn.ended = true;
+        if (conn.reader) {
+            conn.reader.resolve(Buffer.from(''));
+            conn.reader = null;
+        }
+    });
+    socket.on('error', function (err) {
+        conn.err = err;
+        if (conn.reader) {
+            conn.reader.reject(err);
+            conn.reader = null;
+        }
+    });
+    return conn;
+};
 var serveClient = function (socket) { return __awaiter(void 0, void 0, void 0, function () {
     var conn, data;
     return __generator(this, function (_a) {
@@ -50,11 +83,12 @@ var serveClient = function (socket) { return __awaiter(void 0, void 0, void 0, f
                 return [4 /*yield*/, soRead(conn)];
             case 2:
                 data = _a.sent();
+                //the client closes the connection
                 if (data.length === 0) {
                     console.log('end connection');
                     return [3 /*break*/, 4];
                 }
-                console.log('data', data);
+                console.log('data', data.toString());
                 return [4 /*yield*/, soWrite(conn, data)];
             case 3:
                 _a.sent();
@@ -87,38 +121,8 @@ var newConn = function (socket) { return __awaiter(void 0, void 0, void 0, funct
         }
     });
 }); };
-var soInit = function (socket) {
-    //create out connection object
-    var conn = {
-        socket: socket,
-        err: null,
-        ended: false,
-        reader: null
-    };
-    socket.on('data', function (data) {
-        console.assert(conn.reader);
-        //pause the 'data' event on this socket
-        conn.socket.pause();
-        conn.reader.resolve(data);
-        conn.reader = null;
-    });
-    socket.on('end', function () {
-        conn.ended = true;
-        if (conn.reader) {
-            conn.reader.resolve(Buffer.from(''));
-            conn.reader = null;
-        }
-    });
-    socket.on('error', function (err) {
-        conn.err = err;
-        if (conn.reader) {
-            conn.reader.reject(err);
-            conn.reader = null;
-        }
-    });
-    return conn;
-};
 var soRead = function (conn) {
+    //ensure this is the only read happening
     console.assert(!conn.reader);
     return new Promise(function (resolve, reject) {
         if (conn.err) {
@@ -156,4 +160,4 @@ var server = net.createServer({
 });
 server.on('error', function (err) { throw err; });
 server.on('connection', newConn);
-server.listen({ host: '127.0.0.1', port: 1234 });
+server.listen({ host: host, port: port }, function () { console.log("Bind and listen on ".concat(host, " port ").concat(port)); });
