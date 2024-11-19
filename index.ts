@@ -98,7 +98,7 @@ let soRead = (conn: TCPConn): Promise<Buffer> => {
 			reject: reject
 		}
 
-		conn.socket.resume;
+		conn.socket.resume();
 	})
 }
 
