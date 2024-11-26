@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "tsc -w index.ts",
-    "dev": "nodemon index.js"
+    "watch": "tsc -w http-server.ts tcp-server/tcp-server.ts",
+    "dev": "nodemon tcp-server/index.js"
   },
   "keywords": [],
   "author": "",
