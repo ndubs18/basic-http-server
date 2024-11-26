@@ -1,4 +1,10 @@
-//converting callback based socket api into promise based
+/* Building a simple tcp server by converting
+ * the callback-based socket api to a promise
+ * based one.
+ *
+ * This was a side exercise in order to practice
+ * promises as well as network programming
+*/
 import * as net from 'net'
 
 const host: string = '127.0.0.1';
@@ -73,7 +79,7 @@ type TCPConn = {
 	socket: net.Socket,
 	err: null | Error,
 	ended: boolean,
-
+	//object holding executer function callbacks for promises
 	reader: null | {
 		resolve: (value: Buffer) => void,
 		reject: (reason: Error) => void
