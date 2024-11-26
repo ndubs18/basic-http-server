@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "tsc -w http-server.ts tcp-server/tcp-server.ts",
-    "dev": "nodemon http-server.js"
+    "dev": "nodemon http-server.js",
+    "build": "tsc http-server.ts tcp-server/tcp-server.ts",
+    "start": "node http-server.js"
   },
   "keywords": [],
   "author": "",
